@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noi suntem cei pe care i-am asteptat</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --border: #2a2d3a;
+  --text: #e2e4e9;
+  --text-dim: #8b8f9a;
+  --accent: #6c8cff;
+  --green: #34d399;
+  --yellow: #fbbf24;
+  --red: #f87171;
+  --radius: 8px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.denied {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.denied p {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  background: var(--surface);
+  padding: 2rem 3rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.app { display: none; max-width: 720px; margin: 0 auto; padding: 0 1rem 4rem; }
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  padding: 1rem 0 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.user-badge {
+  font-size: 0.85rem;
+  color: var(--accent);
+  background: rgba(108,140,255,0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tab:hover { color: var(--text); }
+
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s;
+  width: 0;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.question {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.q-number {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-bottom: 0.25rem;
+}
+
+.q-text {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.q-context {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  background: rgba(108,140,255,0.05);
+  border-left: 3px solid var(--accent);
+  padding: 0.75rem 1rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.q-options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.q-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 44px;
+}
+
+.q-option:hover { background: rgba(108,140,255,0.05); }
+.q-option.selected { background: rgba(108,140,255,0.1); }
+
+.q-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  margin-top: 1px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.q-option input[type="radio"]:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.q-option input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 4px; left: 4px;
+  width: 8px; height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.q-option label {
+  font-size: 0.9rem;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.q-comment {
+  margin-top: 0.75rem;
+}
+
+.q-comment textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.15s;
+}
+
+.q-comment textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.q-comment textarea::placeholder { color: var(--text-dim); }
+
+.q-answers {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.answer-chip {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(108,140,255,0.1);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  margin-top: 2rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  min-height: 52px;
+  transition: opacity 0.15s;
+}
+
+.export-btn:hover { opacity: 0.9; }
+.export-btn:active { opacity: 0.8; }
+
+.export-btn.success {
+  background: var(--green);
+}
+
+/* Checklist */
+
+.phase-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--yellow);
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.task {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  min-height: 44px;
+}
+
+.task-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 1px;
+  position: relative;
+}
+
+.task-check:checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.task-check:checked::after {
+  content: "";
+  position: absolute;
+  top: 3px; left: 6px;
+  width: 5px; height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.task-body { flex: 1; min-width: 0; }
+
+.task-text {
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.5;
+}
+
+.task.checked .task-text {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge-owner {
+  background: rgba(108,140,255,0.15);
+  color: var(--accent);
+}
+
+.badge-date {
+  background: rgba(251,191,36,0.15);
+  color: var(--yellow);
+}
+
+.task-checkers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.checker-chip {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(52,211,153,0.1);
+  color: var(--green);
+  border: 1px solid rgba(52,211,153,0.2);
+}
+</style>
+</head>
+<body>
+
+<div class="denied" id="denied">
+  <p>Acces restrictionat. Ai nevoie de un link valid.</p>
+</div>
+
+<div class="app" id="app">
+  <div class="header">
+    <div class="header-top">
+      <strong style="font-size:0.95rem;">Decizii fondare</strong>
+      <span class="user-badge" id="userBadge"></span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="chestionar">Chestionar</button>
+      <button class="tab" data-tab="checklist" id="checklistTab">Checklist Lansare</button>
+    </div>
+  </div>
+
+  <div class="tab-content active" id="tab-chestionar">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 / 24 raspunsuri</div>
+    <div id="questionsContainer"></div>
+    <button class="export-btn" id="exportBtn">Trimite raspunsurile</button>
+  </div>
+
+  <div class="tab-content" id="tab-checklist">
+    <div id="checklistContainer"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  var USERS = {
+    "biv-7f3a9e": { name: "Bogdan Ivanel", role: "lead" },
+    "abl-4d2c8b": { name: "Ana Blidaru", role: "core" },
+    "ovr-9e1f5a": { name: "Olivia Vereha", role: "core" },
+    "ccb-2a8d4e": { name: "Cristian China Birta", role: "core" },
+    "cbu-6f3b7c": { name: "Claudiu Butacu", role: "core" },
+    "pal-8c5e2d": { name: "Paul Alexandru", role: "core" }
+  };
+
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get("t");
+
+  if (!token || !USERS[token]) {
+    document.getElementById("denied").style.display = "flex";
+    return;
+  }
+
+  var currentUser = USERS[token];
+  var firstName = currentUser.name.split(" ")[0];
+
+  document.getElementById("denied").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("userBadge").textContent = currentUser.name;
+
+  if (currentUser.role !== "lead") {
+    document.getElementById("checklistTab").style.display = "none";
+    document.getElementById("tab-checklist").style.display = "none";
+  }
+
+  // Data keys
+  var ANSWERS_KEY = "answers_" + token;
+  var COMMENTS_KEY = "comments_" + token;
+  var CHECKS_KEY = "checks_" + token;
+
+  function loadJSON(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch(e) { return {}; }
+  }
+  function saveJSON(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  var answers = loadJSON(ANSWERS_KEY);
+  var comments = loadJSON(COMMENTS_KEY);
+  var checks = loadJSON(CHECKS_KEY);
+
+  // Get all users' answers for showing chips
+  function getAllAnswers(qId) {
+    var result = [];
+    Object.keys(USERS).forEach(function(tk) {
+      if (tk === token) return;
+      var a = loadJSON("answers_" + tk);
+      if (a[qId] !== undefined) {
+        result.push({ name: USERS[tk].name.split(" ")[0], answer: a[qId] });
+      }
+    });
+    return result;
+  }
+
+  function getAllChecks(taskId) {
+    var result = [];
+    Object.keys(USERS).forEach(function(tk) {
+      if (tk === token) return;
+      var c = loadJSON("checks_" + tk);
+      if (c[taskId]) {
+        result.push(USERS[tk].name.split(" ")[0]);
+      }
+    });
+    return result;
+  }
+
+  // Questions data
+  var SECTIONS = [
+    {
+      title: "Statut \u2014 Decizii critice",
+      questions: [
+        {
+          id: "q1",
+          text: "Adaugam Comisie de Cenzori (control financiar intern)?",
+          context: "Feedback focus grup + statutul avocatilor o cer. Noi avem doar Trezorier + audit extern voluntar. Comisia de Cenzori verifica intern finantele, separat de Comisia de Arbitraj.",
+          options: ["Da, la toate nivelurile", "Da, doar la nivel national", "Nu, auditul extern e suficient"]
+        },
+        {
+          id: "q2",
+          text: "Interdictia explicita pentru fosti/actuali membri ai serviciilor secrete?",
+          context: "Feedback focus grup cere explicit. Statutul avocatilor are formulare detaliata: SRI, SIE, lucratori acoperiti, informatori, colaboratori. Noi nu avem nimic.",
+          options: ["Da, interdictie absoluta", "Da, cu exceptie dupa 10 ani de la incetare", "Nu, e discriminatoriu"]
+        },
+        {
+          id: "q3",
+          text: "Extindem incompatibilitatile absolute cu evaziune fiscala si spalare de bani?",
+          context: "Acum avem doar: coruptie, securitate, violenta, infractiuni contra persoanei. Focus grupul cere explicit si infractiuni economice. Statutul avocatilor le include.",
+          options: ["Da, adaugam evaziune fiscala si spalare de bani", "Da, adaugam toate infractiunile economice", "Nu, pastram lista actuala"]
+        },
+        {
+          id: "q4",
+          text: "Mentionam fundamentele morale crestine in obiectivele partidului?",
+          context: "Statutul avocatilor le mentioneaza explicit. Noi nu. Mentionarea poate atrage un segment conservator dar poate indeparta votanti seculari si minoritati religioase.",
+          options: ["Da, mentionam explicit", "Formulare neutra: traditii culturale si morale", "Nu, pastram fara referinta religioasa"]
+        },
+        {
+          id: "q5",
+          text: "Obligatia alesilor de a demisiona din functia publica daca parasesc partidul?",
+          context: "Statutul avocatilor o are. Am respins-o initial (risc abuzuri inverse). Legal, mandatul e personal (Art. 69 Constitutie). Focus grupul cere mecanisme anti-migratie.",
+          options: ["Da, obligatie statutara", "Angajament moral public (nu obligatoriu juridic)", "Nu, riscul de abuz e prea mare"]
+        },
+        {
+          id: "q6",
+          text: "Reinscriere dupa excludere: cat timp?",
+          context: "Noi: 3 ani. Avocatii: niciodata. Focus grupul cere fermitate dar si echitate.",
+          options: ["3 ani (varianta noastra)", "5 ani (compromis)", "Niciodata (varianta avocatilor)"]
+        }
+      ]
+    },
+    {
+      title: "Statut \u2014 Decizii importante",
+      questions: [
+        {
+          id: "q7",
+          text: "Cotizatie diferentiata pe varsta?",
+          context: "Avocatii propun: 5 RON (sub 25 ani), 10 RON (peste 60), 20 RON (restul). Noi: 10 RON Membri, 20 RON Titulari. Focus grupul cere accesibilitate.",
+          options: ["Da, diferentiem pe varsta", "Pastram pe niveluri (10/20 RON)", "Combinam: varsta + nivel"]
+        },
+        {
+          id: "q8",
+          text: "Simpatizanti de la 16 ani?",
+          context: "Avocatii: da, de la 16. Noi: implicit 18. Focus grupul cere deschidere catre tineri. Avantaj: pipeline. Risc: protectie minori.",
+          options: ["Da, de la 16 ani", "Da, de la 16 cu acord parental", "Nu, de la 18"]
+        },
+        {
+          id: "q9",
+          text: "Politica anti-hartuire si abuz (PSEA)?",
+          context: "Focus grupul cere explicit safe space si mecanism anti-hartuire. Absent din ambele statute. Necesara in Codul de Etica sau ca articol in Statut.",
+          options: ["Da, articol in Statut", "Da, in Codul de Etica (nu in Statut)", "Nu e prioritar acum"]
+        },
+        {
+          id: "q10",
+          text: "Evaluare psihologica obligatorie pentru candidati la functii publice?",
+          context: "Focus grupul cere explicit. Absent din ambele statute. Probleme: GDPR, cost, cine evalueaza, discriminare potentiala.",
+          options: ["Da, obligatorie", "Da, dar doar pentru functii nationale", "Nu, e invaziva si discriminatorie"]
+        },
+        {
+          id: "q11",
+          text: "Obiective de reprezentare echilibrata de gen?",
+          context: "Focus grupul cere explicit gender balance. Absent din ambele statute. Optiuni: cote obligatorii, obiective orientative, sau nici un mecanism.",
+          options: ["Cote obligatorii (ex: minim 30% per gen in conducere)", "Obiective orientative (nu obligatorii)", "Fara mecanisme specifice \u2014 meritocratie pura"]
+        },
+        {
+          id: "q12",
+          text: "Autosuspendare pentru functii publice incompatibile?",
+          context: "Avocatii au: daca devii magistrat sau alta functie incompatibila, te autosuspendi, pastrezi vechimea, revii automat la incetarea functiei.",
+          options: ["Da, cu pastrare vechime", "Da, fara pastrare vechime", "Nu e necesar"]
+        },
+        {
+          id: "q13",
+          text: "Impartirea cotizatiilor intre central si local?",
+          context: "Avocatii propun 60% local / 40% central. Noi: totul central. Impartirea da autonomie financiara organizatiilor locale.",
+          options: ["60% local / 40% central", "50% / 50%", "Totul central, redistribuit dupa necesitati"]
+        }
+      ]
+    },
+    {
+      title: "Denumire",
+      questions: [
+        {
+          id: "q14",
+          text: "Care este numele preferat al partidului?",
+          context: "PACT e ocupat. CLAR a fost propus dar considerat agnostic. ACASA a existat ca partid dar trebuie verificat daca mai e inregistrat. Trebuie verificat la Tribunalul Bucuresti si OSIM. Sau propui alt nume in comentariu.",
+          options: ["ACASA", "CLAR", "TEMEI", "NORD", "Alt nume (specifica in comentariu)", "Nu am preferinta"]
+        }
+      ]
+    },
+    {
+      title: "Strategie",
+      questions: [
+        {
+          id: "q15",
+          text: "Prioritatea #1 pentru primele 6 luni dupa lansare?",
+          context: "Resurse limitate. Nu putem face totul simultan.",
+          options: ["Crestere de membri (4K la 25K)", "Vizibilitate publica (media, social media)", "Constructie organizationala (filiale, formare)", "Strangere de fonduri"]
+        },
+        {
+          id: "q16",
+          text: "Primul obiectiv electoral: unde?",
+          context: "Candidat potential la Cluj (Sabin Sarmas). Locale 2028 = si Bucuresti, Timisoara, Iasi.",
+          options: ["Cluj \u2014 avem candidat", "Bucuresti \u2014 cel mai mare bazin", "Mai multe orase simultan", "E prea devreme sa decidem"]
+        },
+        {
+          id: "q17",
+          text: "Cum ne raportam la USR?",
+          context: "Publicul nostru tinta se suprapune cu fostul electorat USR.",
+          options: ["Concurenti directi", "Potentiali parteneri pe teme comune", "Ignoram \u2014 ne adresam non-votantilor", "Depinde de evolutia lor"]
+        }
+      ]
+    },
+    {
+      title: "Mecanisme (din feedback focus grup)",
+      questions: [
+        {
+          id: "q18",
+          text: "Servicii secrete: ce grad de interdictie?",
+          context: "Focus grupul cere explicit. Intrebarea e cat de larga e interdictia.",
+          options: ["Toti fostii/actualii din orice serviciu", "Doar cei cu functii operative/acoperite", "Doar colaboratorii/informatorii", "Nu interzicem, dar cerem declaratie"]
+        },
+        {
+          id: "q19",
+          text: "Conflicte de interese: pana la ce grad de rudenie verificam?",
+          context: "Focus grupul cere verificare extinsa. Trebuie un echilibru intre due diligence si invaziunea in viata privata.",
+          options: ["Gradul 1 (sot/sotie, copii, parinti)", "Gradul 2 (+ frati, bunici, nepoti)", "Gradul 3-4 (veri, unchi)", "Doar declaratie pe proprie raspundere"]
+        },
+        {
+          id: "q20",
+          text: "Reinstruire periodica pe etica si cod de conduita?",
+          context: "Focus grupul cere explicit cursuri periodice. Noi avem Academia dar nu reciclare periodica.",
+          options: ["Da, anual, pentru toti membrii cu functii", "Da, la 2 ani", "Nu, formarea initiala e suficienta"]
+        },
+        {
+          id: "q21",
+          text: "Mecanism formal de consultare cu societatea civila?",
+          context: "Focus grupul cere dialog permanent cu ONG-uri. Noi avem Platforma de Sesizari dar nu un mecanism formal de parteneriat.",
+          options: ["Da, consiliu consultativ permanent cu ONG-uri", "Da, consultari periodice (semestrial)", "Platforma de Sesizari e suficienta"]
+        }
+      ]
+    },
+    {
+      title: "Digital si operational",
+      questions: [
+        {
+          id: "q22",
+          text: "Cat de important e sa fie totul open source?",
+          context: "Open source = codul public, oricine poate verifica. Avantaj: transparenta. Risc: competitorii vad codul.",
+          options: ["Totul open source", "Partial: backend privat, frontend open", "Nu e prioritar"]
+        },
+        {
+          id: "q23",
+          text: "Cine ar trebui sa conduca dezvoltarea tehnica (CTO)?",
+          context: "Avem resurse tech interne (comunitatea Code for Romania). Trebuie cineva dedicat.",
+          options: ["Cineva din echipa existenta CfR", "Recrutam extern", "Volunteer-based, fara CTO dedicat", "Nu stiu"]
+        },
+        {
+          id: "q24",
+          text: "Cum comunicam povestea la lansare?",
+          context: "Nu comunicam ca am preluat un partid din Caracal. Comunicam: avem partid, gata de treaba.",
+          options: ["Focus pe viziune si mecanisme diferentiatoare", "Focus pe echipa si oameni", "Focus pe problema pe care o rezolvam", "Combinatie (specifica in comentariu)"]
+        }
+      ]
+    },
+    {
+      title: "Structura si organizare",
+      questions: [
+        {
+          id: "q25",
+          text: "Organizare pe regiuni (noi) sau strict administrativ-teritorial (avocati)?",
+          context: "Noi: 8 regiuni + diaspora ca nivel principal de coordonare, judete subordonate. Avocati: local-judetean-national clasic. Regiunile previn feudalizarea pe judete dar nu sunt prevazute explicit in lege.",
+          options: ["Regiuni ca nivel principal (varianta noastra)", "Administrativ-teritorial clasic (local-judetean-national)", "Hibrid: judete ca baza, regiuni doar pentru coordonare fara putere formala"],
+          bi: true
+        },
+        {
+          id: "q26",
+          text: "Congresul National: cat de des?",
+          context: "Noi: anual (for viu, democratic). Avocati: o data la 4 ani (for episodic, risc de orchestrare). Costul unui Congres anual e semnificativ.",
+          options: ["Anual (varianta noastra)", "La 2 ani (compromis)", "La 4 ani (varianta avocatilor)"]
+        },
+        {
+          id: "q27",
+          text: "Sistemul mixt de alegere a Presedintelui (60% vot direct + 40% delegati)?",
+          context: "Noi: sistem mixt. Avocati: ales de Congres clasic in 2 tururi. Sistemul mixt da voce directa bazei dar e mai complex.",
+          options: ["Da, pastram 60/40 (varianta noastra)", "Crestem la 70/30 (mai multa putere bazei)", "Alegere clasica de Congres (varianta avocatilor)"],
+          bi: true
+        },
+        {
+          id: "q28",
+          text: "Maximum mandate Presedinte: cate?",
+          context: "Noi: max 2 consecutive. Avocati: max 3 totale. 2 consecutive = 8 ani max dar poate reveni dupa pauza. 3 totale = 12 ani max dar niciodata dupa.",
+          options: ["Max 2 consecutive (varianta noastra)", "Max 3 totale (varianta avocatilor)", "Max 2 totale (cel mai restrictiv)"]
+        },
+        {
+          id: "q29",
+          text: "Dimensiunea Consiliului National?",
+          context: "Noi: ~20 persoane (9 coordonatori regionali + BE + delegati). Avocati: 47 persoane (23 alesi + 24 reprezentanti regionali). Mai mare = mai reprezentativ dar mai greu de coordonat.",
+          options: ["~20 persoane (compact, eficient)", "~30 persoane (compromis)", "~47 persoane (reprezentativ, cum propun avocatii)"]
+        },
+        {
+          id: "q30",
+          text: "Aderarea obligatorie la grupul parlamentar/consilierilor format de partid?",
+          context: "Avocatii o cer explicit. Noi nu o avem. Completeza disciplina alesilor si previne migrarea la alte grupuri.",
+          options: ["Da, obligatorie", "Da, cu posibilitate de exceptie motivata", "Nu, e o restrictie excesiva"]
+        },
+        {
+          id: "q31",
+          text: "Responsabilitate patrimoniala separata a organizatiilor teritoriale?",
+          context: "Avocatii prevad ca organizatiile locale raspund separat fata de terti. Protejeaza conducerea centrala de datoriile organizatiilor locale.",
+          options: ["Da, raspundere separata", "Nu, raspundere solidara"]
+        },
+        {
+          id: "q32",
+          text: "Vechimea ca simpatizant se contorizeaza la trecerea la Membru?",
+          context: "Avocatii prevad asta. Noi nu. Avantaj: recunoaste implicarea timpurie. Echitabil pentru cei care au fost activi ca simpatizanti.",
+          options: ["Da, se contorizeaza", "Nu, vechimea incepe de la Membru"]
+        },
+        {
+          id: "q33",
+          text: "Prelungirea de drept a mandatelor cu max 6 luni daca alegerile intarzie?",
+          context: "Avocatii prevad asta explicit. Noi avem doar transferul competentelor la Consiliul National dupa 15 luni. Prelungirea de drept acopera un vid juridic real.",
+          options: ["Da, max 6 luni prelungire automata", "Da, max 3 luni", "Nu, transferul la CN e suficient"]
+        }
+      ]
+    },
+    {
+      title: "Validare mecanisme existente",
+      questions: [
+        {
+          id: "q34",
+          text: "Consiliul Fondatorilor: 5-7 persoane cu drept de veto pe 20 de ani. Esti de acord?",
+          context: "Vetoul se exercita DOAR pe schimbarea valorilor fundamentale si pe dizolvare. Poate fi depasit cu 4/5 din Congres. La 20 de ani, competentele trec la Congres. Acest mecanism protejeaza ADN-ul partidului de devieri.",
+          options: ["Da, pastram asa", "Da, dar reducem la 10 ani", "Da, dar facem vetoul depasibil cu 3/4 (nu 4/5)", "Nu sunt de acord cu Consiliul Fondatorilor"],
+          bi: true
+        },
+        {
+          id: "q35",
+          text: "Principiul restrictiei implicite (default deny): ce nu e permis e interzis pentru conducere. Esti de acord?",
+          context: "Conducerea partidului poate face DOAR ce e autorizat explicit. Membrii simpli au libertate de initiativa. In situatii neprevazute, BE poate emite autorizari ad-hoc ratificate ulterior de CN.",
+          options: ["Da, pastram", "Da, dar cu mai multa flexibilitate", "Nu, e prea restrictiv"]
+        },
+        {
+          id: "q36",
+          text: "Carantina electorala: 60 de zile inghetare liste + 3 luni stagiu pana la drept de vot. OK?",
+          context: "Previne inscrierea masiva inainte de alegeri interne (problema autobuzului din USR). Dar inseamna ca cineva nou trebuie sa astepte 5+ luni pana voteaza.",
+          options: ["Da, 60 zile + 3 luni e corect", "Reducem la 30 zile + 2 luni", "E prea mult, descurajeaza membrii noi"]
+        },
+        {
+          id: "q37",
+          text: "Cotizatia de 10 RON/luna ca filtru anti-capturare (nu ca sursa de venit). Accepti logica?",
+          context: "Scopul: un candidat intern nu poate plati cotizatia pentru 50 de fictivi luni de zile fara sa fie detectat. Membrii cu dificultati financiare pot cere scutire. 10 RON/luna nu exclude pe nimeni.",
+          options: ["Da, 10 RON e corect", "Reducem la 5 RON", "Eliminam cotizatia, gasim alt filtru"]
+        },
+        {
+          id: "q38",
+          text: "Evaluarea adversariala a candidatilor (echipa independenta care testeaza vulnerabilitatile). Realista?",
+          context: "Noi avem 5 etape de verificare inclusiv echipa adversariala si consultare comunitara 30 zile. Avocatii au doar verificare Comisie Etica. Focus grupul cere verificare riguroasa.",
+          options: ["Da, pastram toate 5 etapele", "Simplificam: doar verificare fond + Comisie Etica (fara echipa adversariala)", "Echipa adversariala doar pentru functii nationale, simplificat pentru locale"],
+          bi: true
+        },
+        {
+          id: "q39",
+          text: "Transparenta radicala (donatii publicate in 5 zile, raport lunar, buget campanie in timp real). Fezabil?",
+          context: "Noi mergem mult peste cerinta legala. Avocatii au doar conformare legala minima. Focus grupul cere explicit transparenta totala.",
+          options: ["Da, din prima zi", "Da, dar implementare progresiva (raport trimestrial la inceput, lunar dupa 1 an)", "Doar conformare legala, restul optional"]
+        },
+        {
+          id: "q40",
+          text: "Registrul Pozitiilor cu indicatori masurabili si raport public de progres. E realist?",
+          context: "Fiecare pozitie = obiective, termene, responsabil. Trimestrial se publica progresul. Niciun alt partid din Romania nu face asta.",
+          options: ["Da, e diferentiatorul nostru", "Da, dar fara indicatori masurabili (doar pozitii)", "Nu, e prea birocratic"]
+        },
+        {
+          id: "q41",
+          text: "Evaluarea anuala a conducerii de catre membri (anonim, cu raport public). OK?",
+          context: "Membrii evalueaza Biroul Executiv si Coordonatorii Regionali. Rezultatele agregate se publica intern. Daca BE nu respecta, CN poate convoca Congres extraordinar.",
+          options: ["Da, anual si obligatoriu", "Da, dar la 2 ani", "Nu, conducerea raspunde doar la Congres"]
+        }
+      ]
+    },
+    {
+      title: "Relatii si aliante",
+      questions: [
+        {
+          id: "q42",
+          text: "Procedura formala pentru aliante si coalitii electorale?",
+          context: "Avocatii au prevederi despre aliante. Noi avem doar interdictia de colaborare cu extremisti (Art. 6). Nu avem procedura pozitiva: cu cine si cum facem aliante.",
+          options: ["Da, adaugam procedura (cine propune, cine aproba, ce conditii)", "Nu, decidem de la caz la caz", "Doar Congresul poate aproba aliante"],
+          bi: true
+        },
+        {
+          id: "q43",
+          text: "Departament Tematic de Cultura mentionat explicit?",
+          context: "Focus grupul cere explicit atentie la cultura, educatie culturala, patrimoniu. Noi avem Departamente Tematice dar nu enumeram explicit pe cele de cultura.",
+          options: ["Da, enumeram explicit", "Nu, lista deschisa e suficienta (etc.)"]
+        },
+        {
+          id: "q44",
+          text: "Mecanism de checking-in cu membrii inactivi?",
+          context: "Focus grupul cere. Noi nu avem nimic. Un membru care dispare fara sa anunte nu e urmarit. Poate fi semn de demotivare sau poate fi problema de siguranta.",
+          options: ["Da, contact proactiv dupa 3 luni de inactivitate", "Da, dar doar notificare automata (nu contact personal)", "Nu, e treaba membrului sa se implice"]
+        }
+      ]
+    }
+  ];
+
+  // Checklist data
+  var PHASES = [
+    {
+      title: "Saptamana 1: Due diligence (ACUM)",
+      tasks: [
+        { id: "t1", text: "Contact Hera Natalica (Presedinte PD) \u2014 0753.381.311", owner: "Bogdan", date: "1-2 apr" },
+        { id: "t2", text: "Contact fondatori: Buzatu George, Petre Dragos, Petre Adriana", owner: "Bogdan", date: "1-2 apr" },
+        { id: "t3", text: "Angajeaza avocat specializat dreptul partidelor", owner: "Bogdan", date: "1-3 apr" },
+        { id: "t4", text: "Obtine sentinta 02.10.2024 (Tribunal Bucuresti, dos. 22/7393/2024)", owner: "Avocat", date: "3-5 apr" },
+        { id: "t5", text: "Verifica raportari AEP ale PD (ultimii 3 ani)", owner: "Avocat", date: "3-5 apr" },
+        { id: "t6", text: "Verifica datorii ANAF (CIF 41779371)", owner: "Avocat", date: "3-5 apr" },
+        { id: "t7", text: "Verifica sold cont BT (IBAN: RO72BTRLRONCRT0690407501)", owner: "Avocat", date: "3-5 apr" },
+        { id: "t8", text: "Verifica Registrul Partidelor (Tribunal Bucuresti)", owner: "Avocat", date: "3-5 apr" },
+        { id: "t9", text: "Obtine statutul complet PD", owner: "Avocat", date: "3-5 apr" },
+        { id: "t10", text: "Cati membri activi are PD efectiv?", owner: "Bogdan", date: "la intalnire" }
+      ]
+    },
+    {
+      title: "Saptamana 1-2: Negociere",
+      tasks: [
+        { id: "t11", text: "Intalnire directa cu Hera Natalica si/sau fondatori", owner: "Bogdan", date: "3-7 apr" },
+        { id: "t12", text: "Acord convocare Adunare Generala Nationala", owner: "Bogdan", date: "la intalnire" },
+        { id: "t13", text: "Acord acceptare membrii noi (echipa noastra)", owner: "Bogdan", date: "la intalnire" },
+        { id: "t14", text: "Acord fondatori (atentie: Buzatu George nu poate fi exclus conform art. 23)", owner: "Bogdan", date: "la intalnire" },
+        { id: "t15", text: "Verificare legala: AG poate fi convocata de Natalica Noca?", owner: "Avocat", date: "5-7 apr" }
+      ]
+    },
+    {
+      title: "Saptamana 2-3: Inscriere + pregatire AG",
+      tasks: [
+        { id: "t16", text: "10-20 persoane cheie depun cereri adeziune la PD", owner: "Echipa", date: "7-14 apr" },
+        { id: "t17", text: "Conducerea actuala aproba cererile", owner: "Hera Natalica", date: "7-14 apr" },
+        { id: "t18", text: "Pregatire documente AG: hotarari, statut nou, dovada sediu", owner: "Avocat + Gabriel", date: "7-14 apr" },
+        { id: "t19", text: "Convocare formala AG (cu termen preaviz)", owner: "Hera Natalica", date: "10-14 apr" }
+      ]
+    },
+    {
+      title: "Saptamana 3-4: Adunarea Generala",
+      tasks: [
+        { id: "t20", text: "Desfasurare AG \u2014 cvorum, procese verbale, vot secret", owner: "Avocat + Bogdan", date: "17-21 apr" },
+        { id: "t21", text: "Vot: Conducere noua (Presedinte, Birou, Secretar General)", owner: "AG", date: "la AG" },
+        { id: "t22", text: "Vot: Statut nou", owner: "AG", date: "la AG" },
+        { id: "t23", text: "Vot: Sediu nou (Caracal \u2192 Bucuresti)", owner: "AG", date: "la AG" },
+        { id: "t24", text: "Vot: Program politic nou", owner: "AG", date: "la AG" }
+      ]
+    },
+    {
+      title: "Saptamana 4-6: Tribunal",
+      tasks: [
+        { id: "t25", text: "Dosar complet depus la Sectia Partide, Tribunal Bucuresti", owner: "Avocat", date: "21-28 apr" },
+        { id: "t26", text: "Monitorizare: contestatii? completari?", owner: "Avocat", date: "continuu" },
+        { id: "t27", text: "Hotarare tribunal", owner: "\u2014", date: "~15 mai" }
+      ]
+    },
+    {
+      title: "Mai 2026: Lansare",
+      tasks: [
+        { id: "t28", text: "Eveniment lansare \u2014 loc, format, comunicare", owner: "Bogdan + echipa", date: "mai" },
+        { id: "t29", text: "Platforma pre-inscriere activa (Portal Membri MVP)", owner: "Echipa tech", date: "mai" },
+        { id: "t30", text: "Comunicare: povestea si mecanismele", owner: "Echipa comunicare", date: "mai" }
+      ]
+    }
+  ];
+
+  // Render questions
+  var container = document.getElementById("questionsContainer");
+  var totalQ = 0;
+
+  SECTIONS.forEach(function(section) {
+    var h = document.createElement("div");
+    h.className = "section-title";
+    h.textContent = section.title;
+    container.appendChild(h);
+
+    section.questions.forEach(function(q) {
+      if (q.bi && currentUser.role !== "lead") return;
+      totalQ++;
+      var div = document.createElement("div");
+      div.className = "question";
+      div.setAttribute("data-qid", q.id);
+
+      var optionsHTML = "";
+      q.options.forEach(function(opt, i) {
+        var checked = answers[q.id] === i ? " checked" : "";
+        var selected = answers[q.id] === i ? " selected" : "";
+        optionsHTML += "<div class=\"q-option" + selected + "\" data-idx=\"" + i + "\">" +
+          "<input type=\"radio\" name=\"" + q.id + "\" id=\"" + q.id + "_" + i + "\" value=\"" + i + "\"" + checked + ">" +
+          "<label for=\"" + q.id + "_" + i + "\">" + opt + "</label></div>";
+      });
+
+      var commentVal = comments[q.id] || "";
+
+      var biTag = (q.bi && currentUser.role === "lead") ? " <span style=\"font-size:.6rem;padding:1px 6px;border-radius:10px;background:rgba(168,85,247,.15);color:#a855f7;vertical-align:middle\">DOAR TU</span>" : "";
+      div.innerHTML =
+        "<div class=\"q-number\">Q" + totalQ + "</div>" +
+        "<div class=\"q-text\">" + q.text + biTag + "</div>" +
+        "<div class=\"q-context\">" + q.context + "</div>" +
+        "<div class=\"q-options\">" + optionsHTML + "</div>" +
+        "<div class=\"q-comment\"><textarea placeholder=\"Comentariu optional...\" data-qid=\"" + q.id + "\">" + commentVal + "</textarea></div>" +
+        "<div class=\"q-answers\" data-qid=\"" + q.id + "\"></div>";
+
+      container.appendChild(div);
+    });
+  });
+
+  // Event delegation for radio selection
+  container.addEventListener("click", function(e) {
+    var optionEl = e.target.closest(".q-option");
+    if (!optionEl) return;
+
+    var questionEl = optionEl.closest(".question");
+    var qid = questionEl.getAttribute("data-qid");
+    var idx = parseInt(optionEl.getAttribute("data-idx"), 10);
+    var radio = optionEl.querySelector("input[type=\"radio\"]");
+    radio.checked = true;
+
+    // Update selection styling
+    var siblings = questionEl.querySelectorAll(".q-option");
+    siblings.forEach(function(s) { s.classList.remove("selected"); });
+    optionEl.classList.add("selected");
+
+    answers[qid] = idx;
+    saveJSON(ANSWERS_KEY, answers);
+    updateProgress();
+  });
+
+  // Comments
+  container.addEventListener("input", function(e) {
+    if (e.target.tagName === "TEXTAREA") {
+      var qid = e.target.getAttribute("data-qid");
+      comments[qid] = e.target.value;
+      saveJSON(COMMENTS_KEY, comments);
+    }
+  });
+
+  // Progress
+  function updateProgress() {
+    var answered = Object.keys(answers).length;
+    var pct = Math.round((answered / totalQ) * 100);
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressText").textContent = answered + " / " + totalQ + " raspunsuri";
+  }
+  updateProgress();
+
+  // Show other users' answers
+  function renderChips() {
+    var allAnswerDivs = container.querySelectorAll(".q-answers");
+    allAnswerDivs.forEach(function(div) {
+      var qid = div.getAttribute("data-qid");
+      var others = getAllAnswers(qid);
+      if (others.length === 0) {
+        div.innerHTML = "";
+        return;
+      }
+      // Find the question options
+      var qOpts = null;
+      SECTIONS.forEach(function(s) {
+        s.questions.forEach(function(q) {
+          if (q.id === qid) qOpts = q.options;
+        });
+      });
+      div.innerHTML = others.map(function(o) {
+        var short = qOpts && qOpts[o.answer] ? qOpts[o.answer] : "?";
+        if (short.length > 30) short = short.substring(0, 30) + "...";
+        return "<span class=\"answer-chip\">" + o.name + ": " + short + "</span>";
+      }).join("");
+    });
+  }
+  renderChips();
+
+  // Tabs
+  var tabBtns = document.querySelectorAll(".tab");
+  tabBtns.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      tabBtns.forEach(function(b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      document.querySelectorAll(".tab-content").forEach(function(tc) { tc.classList.remove("active"); });
+      document.getElementById("tab-" + btn.getAttribute("data-tab")).classList.add("active");
+      if (btn.getAttribute("data-tab") === "chestionar") renderChips();
+      if (btn.getAttribute("data-tab") === "checklist") renderCheckerChips();
+    });
+  });
+
+  // Render checklist
+  var clContainer = document.getElementById("checklistContainer");
+  PHASES.forEach(function(phase) {
+    var h = document.createElement("div");
+    h.className = "phase-title";
+    h.textContent = phase.title;
+    clContainer.appendChild(h);
+
+    phase.tasks.forEach(function(task) {
+      var isChecked = !!checks[task.id];
+      var div = document.createElement("div");
+      div.className = "task" + (isChecked ? " checked" : "");
+      div.setAttribute("data-tid", task.id);
+
+      div.innerHTML =
+        "<input type=\"checkbox\" class=\"task-check\"" + (isChecked ? " checked" : "") + " data-tid=\"" + task.id + "\">" +
+        "<div class=\"task-body\">" +
+          "<div class=\"task-text\">" + task.text + "</div>" +
+          "<div class=\"task-meta\">" +
+            "<span class=\"badge badge-owner\">" + task.owner + "</span>" +
+            "<span class=\"badge badge-date\">" + task.date + "</span>" +
+          "</div>" +
+          "<div class=\"task-checkers\" data-tid=\"" + task.id + "\"></div>" +
+        "</div>";
+
+      clContainer.appendChild(div);
+    });
+  });
+
+  // Checklist events
+  clContainer.addEventListener("change", function(e) {
+    if (e.target.classList.contains("task-check")) {
+      var tid = e.target.getAttribute("data-tid");
+      checks[tid] = e.target.checked;
+      saveJSON(CHECKS_KEY, checks);
+      var taskEl = e.target.closest(".task");
+      if (e.target.checked) {
+        taskEl.classList.add("checked");
+      } else {
+        taskEl.classList.remove("checked");
+      }
+      renderCheckerChips();
+    }
+  });
+
+  function renderCheckerChips() {
+    var chipDivs = clContainer.querySelectorAll(".task-checkers");
+    chipDivs.forEach(function(div) {
+      var tid = div.getAttribute("data-tid");
+      var others = getAllChecks(tid);
+      if (others.length === 0) {
+        div.innerHTML = "";
+        return;
+      }
+      div.innerHTML = others.map(function(name) {
+        return "<span class=\"checker-chip\">" + name + " \u2713</span>";
+      }).join("");
+    });
+  }
+  renderCheckerChips();
+
+  // Export
+  var exportBtn = document.getElementById("exportBtn");
+  exportBtn.addEventListener("click", function() {
+    var lines = [];
+    var now = new Date();
+    var dateStr = now.getDate() + " " +
+      ["ian","feb","mar","apr","mai","iun","iul","aug","sep","oct","nov","dec"][now.getMonth()] + " " +
+      now.getFullYear();
+    lines.push("Raspunsurile lui " + currentUser.name + " \u2014 " + dateStr);
+    lines.push("");
+
+    var qNum = 0;
+    SECTIONS.forEach(function(section) {
+      section.questions.forEach(function(q) {
+        if (q.bi && currentUser.role !== "lead") return;
+        qNum++;
+        var ans = answers[q.id];
+        var ansText = ans !== undefined ? q.options[ans] : "(fara raspuns)";
+        lines.push("Q" + qNum + ": " + q.text.replace(/\?$/, "") + " \u2192 " + ansText);
+        if (comments[q.id] && comments[q.id].trim()) {
+          lines.push("   Comentariu Q" + qNum + ": \"" + comments[q.id].trim() + "\"");
+        }
+      });
+    });
+
+    var text = lines.join("\n");
+
+    if (navigator.share) {
+      navigator.share({ title: "Raspunsuri chestionar", text: text }).catch(function() {
+        copyFallback(text);
+      });
+    } else {
+      copyFallback(text);
+    }
+  });
+
+  function copyFallback(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showExportSuccess();
+      }).catch(function() {
+        textareaFallback(text);
+      });
+    } else {
+      textareaFallback(text);
+    }
+  }
+
+  function textareaFallback(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); showExportSuccess(); }
+    catch(e) { alert(text); }
+    document.body.removeChild(ta);
+  }
+
+  function showExportSuccess() {
+    exportBtn.textContent = "Copiat in clipboard!";
+    exportBtn.classList.add("success");
+    setTimeout(function() {
+      exportBtn.textContent = "Trimite raspunsurile";
+      exportBtn.classList.remove("success");
+    }, 2000);
+  }
+
+})();
+</script>
+</body>
+</html>
