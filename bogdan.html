@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decizii finale — Statut</title>
+<style>
+:root{--bg:#0f1117;--s:#1a1d27;--b:#2a2d3a;--t:#e2e4e9;--td:#8b8fa3;--a:#6c8cff;--g:#34d399;--y:#fbbf24;--r:#f87171;--o:#fb923c;--p:#a855f7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t);line-height:1.6;padding:16px;max-width:800px;margin:0 auto}
+h1{font-size:1.3rem;margin-bottom:2px}
+.sub{color:var(--td);font-size:.8rem;margin-bottom:16px}
+.denied{display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--r);font-size:1rem}
+#app{display:none}
+.user-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:7px 12px;background:var(--s);border-radius:8px;border:1px solid var(--b);font-size:.83rem}
+.user-bar .name{font-weight:600;color:var(--a)}
+.progress{margin-bottom:16px;display:flex;gap:8px;align-items:center}
+.progress-bar{flex:1;height:5px;background:var(--b);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--g);transition:width .3s}
+.progress-text{font-size:.75rem;color:var(--td)}
+.section-title{font-size:.95rem;font-weight:700;padding:6px 0;border-bottom:1px solid var(--b);margin:20px 0 10px}
+.q{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.q.answered{border-color:rgba(52,211,153,.3)}
+.q-num{font-size:.65rem;color:var(--td);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.q-text{font-size:.88rem;font-weight:600;margin-bottom:6px}
+.q-context{font-size:.78rem;color:var(--td);margin-bottom:8px;padding:8px 10px;background:rgba(108,140,255,.04);border-radius:5px;border-left:3px solid var(--a)}
+.q-risk{font-size:.75rem;color:var(--o);margin-bottom:8px;padding:6px 10px;background:rgba(251,146,60,.06);border-radius:5px;border-left:3px solid var(--o)}
+.q-options{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.q-opt{display:flex;align-items:flex-start;gap:7px;padding:6px 9px;border-radius:5px;cursor:pointer;font-size:.8rem}
+.q-opt:hover{background:rgba(108,140,255,.05)}
+.q-opt input{margin-top:3px;accent-color:var(--a);width:15px;height:15px;flex-shrink:0}
+.q-opt.selected{background:rgba(52,211,153,.07)}
+.q-opt label{cursor:pointer;flex:1}
+.q-proscons{font-size:.73rem;color:var(--td);margin:2px 0 6px 22px;padding:4px 6px;border-left:2px solid var(--b)}
+textarea{width:100%;background:var(--bg);border:1px solid var(--b);color:var(--t);padding:7px;border-radius:5px;font-size:.78rem;font-family:inherit;resize:vertical;min-height:36px;margin-top:4px}
+textarea:focus{outline:none;border-color:var(--a)}
+textarea::placeholder{color:var(--td)}
+.toolbar{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.toolbar button{background:var(--a);border:none;color:#fff;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:600}
+.toolbar button:hover{opacity:.9}
+.toolbar button.secondary{background:var(--s);border:1px solid var(--b);color:var(--t);font-weight:400}
+</style>
+</head>
+<body>
+<h1>Decizii finale pe Statut</h1>
+<p class="sub">12 teme de transat. Context, riscuri, scenarii pe fiecare.</p>
+<div class="denied" id="denied">Acces restrictionat. Ai nevoie de un link valid.</div>
+<div id="app">
+  <div class="user-bar">Conectat ca: <span class="name" id="userName"></span></div>
+  <div class="progress"><div class="progress-bar"><div class="progress-fill" id="pf"></div></div><span class="progress-text" id="pt"></span></div>
+  <div id="qs"></div>
+  <div class="toolbar">
+    <button onclick="doExport()">Trimite raspunsurile</button>
+    <button class="secondary" onclick="doJSON()">Export JSON</button>
+  </div>
+</div>
+<script>
+var USERS={"bi-final-x9k2":{name:"Bogdan Ivanel"}};
+var p=new URLSearchParams(window.location.search);
+var tk=p.get("t");
+if(!tk||!USERS[tk]){document.getElementById("denied").style.display="flex";document.getElementById("app").style.display="none";}
+else{
+document.getElementById("denied").style.display="none";
+document.getElementById("app").style.display="block";
+document.getElementById("userName").textContent=USERS[tk].name;
+var SECTIONS=[
+{title:"Structura executiva",questions:[
+{id:"f1",text:"Frecventa Congresului National",
+context:"Congresul e forul suprem. Alege Presedintele, aproba Statutul, Programul politic. In statutul actual: la 2 ani. Tu ai propus la 4 ani (ideal 5, dar legea limiteaza la 4). Avocatii propun tot la 4 ani.",
+risk:"Risc la 4 ani: Congresul devine un eveniment orchestrat, controlat de conducere (vezi PSD). Intre Congrese, CN si BN conduc fara control direct al bazei. Risc la 2 ani: cost logistic ridicat, oboseala organizatorica, dar baza are voce mai des.",
+options:[
+{text:"La 2 ani",pc:"PRO: Baza are voce frecvent. CONTRA: Costisitor, obositor."},
+{text:"La 3 ani (compromis)",pc:"PRO: Echilibru intre control si cost. CONTRA: Nealiniat cu cicluri electorale."},
+{text:"La 4 ani (sincronizat cu alegerile)",pc:"PRO: Costuri reduse, sincronizat electoral. CONTRA: 4 ani e mult fara validare directa a bazei. CN decide aproape tot."},
+{text:"La 4 ani cu Conferinta Nationala anuala (fara putere de alegere, doar dezbateri si raportare)",pc:"PRO: Congres la 4 ani pt alegeri + conferinta anuala pt transparenta. Separa alegerile de dezbateri. CONTRA: Doua evenimente diferite de organizat."}
+]},
+{id:"f2",text:"Mandatul Presedintelui: durata si numar",
+context:"Acum: 4 ani, max 2 consecutive. Tu ai propus: 5 ani, max 3 totale. Legea 14/2003 nu limiteaza explicit durata mandatului. In UK Labour: fara limita. In US Democrats: Chair ales la 4 ani fara limita.",
+risk:"Risc mandat 5 ani: daca Congresul e tot la 4 ani, Presedintele nu e ales la fiecare Congres - decalaj. Risc 3 mandate: un lider poate conduce 15 ani (3x5). E mult. Dar schimbarea fortata a unui lider bun e si ea un risc.",
+options:[
+{text:"4 ani, max 2 consecutive (poate reveni dupa pauza)",pc:"PRO: Renovare regulata. CONTRA: Pierderea unui lider bun."},
+{text:"4 ani, max 3 totale (nu consecutive obligatoriu)",pc:"PRO: Flexibil, permite reveniri. Max 12 ani total. CONTRA: 12 ani e mult."},
+{text:"5 ani, max 2 totale",pc:"PRO: Mandatul lung da stabilitate. 10 ani max. CONTRA: 5 ani nu se aliniaza cu nimic."},
+{text:"5 ani, max 3 totale",pc:"PRO: Stabilitate maxima. CONTRA: 15 ani posibili. Riscul calcificarii."}
+]},
+{id:"f3",text:"Dimensiunea Consiliului National",
+context:"Acum: ~20 persoane. Tu ai propus ~47: BN(~12) + Consiliul de Politici Publice(~15) + echipe(~4) + 10 copresedinti regionali + 10 presedinti tineret + alesi. Grupul chestionar: 4/6 au zis 20, 2 au zis 30.",
+risk:"Risc la 47+: logistica grea, decizii lente, costuri. Risc la 20: nereprezentativ. Risc specific: membrii BN voteaza in CN (dar NU pe motiunea de neincredere - am corectat asta).",
+options:[
+{text:"~20 persoane (compact) - creste organic",pc:"PRO: Rapid, ieftin. CONTRA: Nereprezentativ la scara."},
+{text:"~30 persoane (compromis)",pc:"PRO: Echilibru. CONTRA: Nici compact nici reprezentativ."},
+{text:"~47+ persoane (formula ta completa)",pc:"PRO: Toti stakeholderii la masa. CONTRA: Greu de intrunit."},
+{text:"Variabil: incepe la ~20, creste automat la praguri (10K->30, 50K->47+)",pc:"PRO: Pragmatic. CONTRA: Schimbari frecvente."}
+]},
+{id:"f4",text:"Copresedinti regionali: de ce conducere duala?",
+context:"Ai mentionat copresedinti (plural). Statutul anterior: un singur Coordonator. Conducerea duala exista la Grunen (Germania) pe gender balance.",
+risk:"Risc conducere duala: decizii blocate, ambiguitate. Risc conducere unica: concentrare putere, capturare usoara.",
+options:[
+{text:"Un singur Coordonator Regional",pc:"PRO: Clar, eficient. CONTRA: Concentrare putere."},
+{text:"Doi Copresedinti alesi separat",pc:"PRO: Diversitate, contrapondere. CONTRA: Conflict potential."},
+{text:"Doi Copresedinti pe ticket comun",pc:"PRO: Coerenta. CONTRA: Greu de format."},
+{text:"Doi Copresedinti cu cerinta gender balance",pc:"PRO: Reprezentare de gen. CONTRA: Perceput artificial."}
+]}
+]},
+{title:"Cotizatie si membership",questions:[
+{id:"f5",text:"Cotizatia lunara: cat?",
+context:"Acum in statut: 10 RON Membri, 20 RON Titulari. Tu ai propus: 100 RON normali, 50 RON tineret si pensionari. Toti ceilalti 6 respondenti au zis 10 RON e corect.",
+risk:"La 100 RON: 1.200 RON/an. Un muncitor cu salariu minim (3.700 RON) ar plati 2.7% din venit. Risc: pierdem oameni buni dar saraci. Dar un atacator care vrea 100 de fictivi plateste 120.000 RON/an (descurajant). La 10 RON: 100 fictivi = 12.000 RON (nimic).",
+options:[
+{text:"10 RON/luna (cu diferentiere varsta: 5 sub 25, 10 peste 60)",pc:"PRO: Accesibil. CONTRA: Filtru anti-capturare slab."},
+{text:"50 RON/luna (25 tineret/pensionari)",pc:"PRO: Filtru rezonabil. 600 RON/an acceptabil pt clasa de mijloc. CONTRA: Descurajeaza studenti, rural."},
+{text:"100 RON/luna (50 tineret/pensionari)",pc:"PRO: Filtru puternic, angajament real. CONTRA: Bariera sociala, exclude publicul-tinta."},
+{text:"Cotizatie progresiva pe venit declarat (1% din venitul lunar)",pc:"PRO: Echitabila. CONTRA: Complex, intimitate financiara."}
+]},
+{id:"f6",text:"Reinscriere dupa excludere: cat timp?",
+context:"Tu ai zis 3 ani. 5 din 6 respondenti au zis 5 ani. Avocatii: niciodata.",
+risk:"La 3 ani: un exclus revine repede. La 5 ani: reabilitare blocata. Niciodata: disproportionat.",
+options:[
+{text:"3 ani",pc:"PRO: Reabilitare rapida. CONTRA: Recidiva."},
+{text:"5 ani",pc:"PRO: Descurajant, majoritar sustinut. CONTRA: Excesiv pt abateri minore."},
+{text:"Diferentiat: 3 ani minore, 5 ani grave, niciodata coruptie",pc:"PRO: Proportional. CONTRA: Complexitate."}
+]}
+]},
+{title:"Mecanisme de guvernanta",questions:[
+{id:"f7",text:"Sfatul Inteleptilor: il pastram?",
+context:"Am eliminat Consiliul Fondatorilor. Fostii presedinti sunt acum membri de drept in BN. Sfatul Inteleptilor coordona Academia si oferea mentorat.",
+risk:"Fara Sfat: nimeni nu coordoneaza Academia, mentoratul dispare. Cu Sfat: inca un for, birocratic.",
+options:[
+{text:"Da, pastram - coordoneaza Academia, mentorat, fara putere formala",pc:"PRO: Memorie institutionala. CONTRA: Inca un for."},
+{text:"Nu - BN coordoneaza tot",pc:"PRO: Simplificare. CONTRA: BN e deja incarcat."},
+{text:"Inlocuim cu Consiliu Academic (doar pt formare)",pc:"PRO: Focus. CONTRA: Inca o structura."}
+]},
+{id:"f8",text:"Registrul Pozitiilor: cu indicatori masurabili sau fara?",
+context:"Registrul Pozitiilor = document public cu pozitiile pe fiecare tema. Tu ai zis: fara indicatori. 5/6 respondenti: DA cu indicatori. Ana: nice to have dar nu stiu daca e fezabil (resurse).",
+risk:"Fara indicatori: lista de opinii, nu instrument de accountability. Nu ne diferentiem. Cu indicatori: promitem si nu livram, adversarii ne ataca pe ce nu am livrat.",
+options:[
+{text:"Cu indicatori masurabili pe fiecare angajament",pc:"PRO: Diferentiator unic, credibil. CONTRA: Resurse, risc daca nu livram."},
+{text:"Fara indicatori - doar pozitii pe teme",pc:"PRO: Simplu. CONTRA: Nu ne diferentiem."},
+{text:"Indicatori doar pe top 10 angajamente majore",pc:"PRO: Focalizat, fezabil. CONTRA: Cine decide top 10?"},
+{text:"Implementare progresiva: incepe fara, adauga indicatori dupa resurse",pc:"PRO: Pragmatic. CONTRA: Fara termen, poate nu ajungem."}
+]},
+{id:"f9",text:"Evaluarea conducerii: cum exact?",
+context:"Ai zis: semestrial intern, nu public. Intrebarea e cat de structurat si cine vede rezultatele.",
+risk:"Public: adversarii folosesc rezultatele ca arma. Intern: feedback real fara vulnerabilitate.",
+options:[
+{text:"Semestrial intern, rezultate doar catre CN",pc:"PRO: Feedback real, protejat. CONTRA: Membrii nu vad."},
+{text:"Anual, publicat intern pe platforma membrilor",pc:"PRO: Membrii vad. CONTRA: Scurgeri."},
+{text:"Anual, sinteza publica (doar scor general)",pc:"PRO: Transparenta partiala. CONTRA: Scor deformabil."},
+{text:"Fara mecanism formal - Congresul e suficient",pc:"PRO: Simplu. CONTRA: La 4 ani, mult fara feedback."}
+]}
+]},
+{title:"Riscuri si protectii",questions:[
+{id:"f10",text:"Capturare regionala: mecanisme suplimentare?",
+context:"Din analiza de risc: un actor cu ~200.000 EUR poate infiltra ~300 persoane intr-o regiune mica (Oltenia: 18 inscrisi, Moldova de Sud: 19) pe 12 luni, sub praguri de alerta. Cum: distribuit pe multi recrutori, sub 50/recrutor, sub 30% crestere/trimestru. La Conferinta, voteaza in bloc si preiau conducerea.",
+risk:"Cost atac: 300 pers x (cotizatie + timp) = 100-200K EUR. La 10 RON cotizatie = ieftin. La 100 RON = 10x mai scump dar nu prohibitiv pt un oligarh. Odata capturata o regiune: controleaza Copresedintii, delegatii Congres, voce in CN.",
+options:[
+{text:"Mecanismele actuale sunt suficiente (audit aleatoriu 2 regiuni/an)",pc:"PRO: Simplu. CONTRA: 5 ani pana auditezi totul."},
+{text:"Audit + alarma la orice regiune cu peste 200% crestere anuala",pc:"PRO: Detectie pe orizont lung. CONTRA: 200% e inca permisiv."},
+{text:"Audit + limita: regiune nu creste >100%/an fara aprobare BN",pc:"PRO: Plafon dur. CONTRA: Blocheaza crestere legitima."},
+{text:"Audit + cotizatie mare = dubla protectie",pc:"PRO: Cost infiltrare creste. CONTRA: Bariera si pt membrii legitimi."}
+]},
+{id:"f11",text:"Puterea Presedintelui: contrapondere suficienta?",
+context:"Presedintele: isi alege BN (fara validare), numeste Consiliul de Politici Publice, e candidat la Cotroceni. Contraponderi: motiune neincredere (2/3 CN, BN exclus de la vot), evaluare semestrial, clauze eternitate (9/10 Congres), Canal Integritate.",
+risk:"Scenariul toxic: Presedinte carismatic dar autoritar, BN loial, CPP loial. BN exclus de la vot pe motiune, dar CPP (numit de Presedinte) voteaza. Daca 15 CPP din 35 votanti, Presedintele are 43% bloc loial. Motiunea de 2/3 = 24 voturi din 35. Doar 20 independenti - nu ajung.",
+options:[
+{text:"Contraponderile actuale sunt suficiente",pc:"PRO: Incredere in sistem. CONTRA: Motiunea e dificila matematic."},
+{text:"Excludem si CPP de la vot pe motiune (doar regionali + alesi)",pc:"PRO: Motiunea devine reala. CONTRA: Presedintele pierde increderea echipei."},
+{text:"Max 30% din CN format din persoane numite de Presedinte",pc:"PRO: Plafon structural. CONTRA: Limiteaza flexibilitatea."},
+{text:"Congresul valideaza BN (nu doar ia la cunostinta)",pc:"PRO: Contrapondere democratica. CONTRA: Presedintele nu isi alege liber echipa."}
+]},
+{id:"f12",text:"Protectia datelor si securitate digitala",
+context:"Platforme cu date sensibile: CNP-uri, afilieri politice, donatii, voturi interne, semnalari Canal Integritate. GDPR cere DPO.",
+risk:"Scenariul: baza de date 25.000 CNP-uri + afilieri scursa. Membrii hartuiti, intimidati. Sau: admin sistem citeste semnalarile whistleblowing si le transmite persoanei semnalate.",
+options:[
+{text:"DPO + politica GDPR + audit securitate anual (in Statut)",pc:"PRO: Obligatoriu, serios. CONTRA: Cost."},
+{text:"DPO + separare Canal Integritate de admin (admin NU poate citi)",pc:"PRO: Protectie reala whistleblowing. CONTRA: Complexitate tehnica."},
+{text:"Doar DPO, restul in regulament intern",pc:"PRO: Flexibil. CONTRA: Regulamentul se schimba usor."},
+{text:"Toate + criptare E2E pe Canal Integritate + audit extern anual",pc:"PRO: Cel mai sigur. CONTRA: Cel mai scump."}
+]}
+]}
+];
+var answers={};var comments={};
+try{answers=JSON.parse(localStorage.getItem("fa_"+tk))||{};}catch(e){}
+try{comments=JSON.parse(localStorage.getItem("fc_"+tk))||{};}catch(e){}
+function save(){localStorage.setItem("fa_"+tk,JSON.stringify(answers));localStorage.setItem("fc_"+tk,JSON.stringify(comments));updateProgress();}
+var container=document.getElementById("qs");var totalQ=0;
+function countTotal(){var c=0;SECTIONS.forEach(function(s){c+=s.questions.length});return c;}
+SECTIONS.forEach(function(sec){
+  var h=document.createElement("div");h.className="section-title";h.textContent=sec.title;container.appendChild(h);
+  sec.questions.forEach(function(q){
+    totalQ++;var div=document.createElement("div");div.className="q"+(answers[q.id]!==undefined?" answered":"");div.setAttribute("data-qid",q.id);
+    var optsHTML="";
+    q.options.forEach(function(opt,i){
+      var sel=answers[q.id]===i;
+      optsHTML+="<div class=\"q-opt"+(sel?" selected":"")+"\" data-idx=\""+i+"\"><input type=\"radio\" name=\""+q.id+"\" id=\""+q.id+"_"+i+"\" value=\""+i+"\""+(sel?" checked":"")+"><label for=\""+q.id+"_"+i+"\">"+opt.text+"</label></div>";
+      if(opt.pc)optsHTML+="<div class=\"q-proscons\">"+opt.pc+"</div>";
+    });
+    var cVal=comments[q.id]||"";
+    div.innerHTML="<div class=\"q-num\">Decizie "+totalQ+" din "+countTotal()+"</div><div class=\"q-text\">"+q.text+"</div><div class=\"q-context\">"+q.context+"</div>"+(q.risk?"<div class=\"q-risk\">"+q.risk+"</div>":"")+"<div class=\"q-options\">"+optsHTML+"</div><textarea placeholder=\"Comentariu, nuante, conditii...\" data-qid=\""+q.id+"\">"+cVal+"</textarea>";
+    container.appendChild(div);
+  });
+});
+container.addEventListener("click",function(e){
+  var opt=e.target.closest(".q-opt");if(!opt)return;
+  var radio=opt.querySelector("input[type=radio]");if(!radio)return;
+  radio.checked=true;var qDiv=opt.closest(".q");var qid=qDiv.getAttribute("data-qid");
+  answers[qid]=parseInt(radio.value);qDiv.classList.add("answered");
+  qDiv.querySelectorAll(".q-opt").forEach(function(o){o.classList.remove("selected")});
+  opt.classList.add("selected");save();
+});
+container.addEventListener("input",function(e){
+  if(e.target.tagName==="TEXTAREA"){comments[e.target.getAttribute("data-qid")]=e.target.value;save();}
+});
+function updateProgress(){
+  var answered=Object.keys(answers).length;var total=countTotal();
+  document.getElementById("pf").style.width=Math.round(answered/total*100)+"%";
+  document.getElementById("pt").textContent=answered+" / "+total+" raspunsuri";
+}
+updateProgress();
+function doExport(){
+  var lines=["Decizii finale Statut - "+USERS[tk].name+" - "+new Date().toLocaleDateString("ro-RO"),""];
+  var n=0;
+  SECTIONS.forEach(function(sec){
+    lines.push(sec.title.toUpperCase());
+    sec.questions.forEach(function(q){
+      n++;var ans=answers[q.id];var ansText=ans!==undefined?q.options[ans].text:"(fara raspuns)";
+      lines.push("D"+n+": "+q.text+" -> "+ansText);
+      if(comments[q.id]&&comments[q.id].trim())lines.push("   Comentariu: \""+comments[q.id].trim()+"\"");
+    });lines.push("");
+  });
+  var text=lines.join("\n");
+  if(navigator.share){navigator.share({title:"Decizii finale",text:text}).catch(function(){copyFB(text)});}
+  else{copyFB(text);}
+}
+function copyFB(t){navigator.clipboard.writeText(t).then(function(){alert("Copiat!")}).catch(function(){prompt("Copiaza:",t)});}
+function doJSON(){
+  var d={exported:new Date().toISOString(),user:USERS[tk].name,answers:answers,comments:comments};
+  var t=JSON.stringify(d,null,2);
+  if(navigator.share){navigator.share({title:"JSON",text:t}).catch(function(){copyFB(t)});}
+  else{copyFB(t);}
+}
+}
+</script>
+</body>
+</html>
